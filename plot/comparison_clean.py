@@ -50,7 +50,7 @@ def create_and_split(train_size, split_seed, init_seed, characteristics, var=1.0
                 adj[(idx if idx < i else i) + num][(i if idx < i else idx + 1) + num] = 1
         adj = adj + np.transpose(adj) + np.eye(2*num)
 
-        # split data
+        # split MS
         np.random.seed(split_seed)
         train_idx_red = np.random.choice(range(num), size=int(num * train_size), replace=False)
         train_idx_blue = np.random.choice(range(num, 2*num), size=int(num * train_size), replace=False)
@@ -90,7 +90,7 @@ def create_and_split(train_size, split_seed, init_seed, characteristics, var=1.0
                         adj[idx_i + num][idx_j + num] = 1
         adj = adj + np.transpose(adj) + np.eye(2*num)
 
-        # split data
+        # split MS
         np.random.seed(split_seed)
         train_idx_red = np.concatenate(
             [np.random.choice(communities_red[0], int(num * train_size * 0.8), replace=False),
@@ -121,7 +121,7 @@ def create_and_split(train_size, split_seed, init_seed, characteristics, var=1.0
                 adj[(idx if idx < i else i) + num][(i if idx < i else idx + 1) + num] = 1
         adj = adj + np.transpose(adj) + np.eye(2*num)
 
-        # split data
+        # split MS
         np.random.seed(split_seed)
         train_idx_red = np.random.choice(range(num), size=int(num * train_size), replace=False)
         train_idx_blue = np.random.choice(range(num, 2*num), size=int(num * train_size), replace=False)
@@ -181,16 +181,17 @@ def plot_boundary_and_set_ticklabels(ax, characteristics, _min, _max, is_last_co
         ax2.set_ylim(_min, _max)
         ax2.set_yticks([center_red, center_blue])
         if is_last_column:
-            ax2.set_yticks([center_red, center_blue])
+            ax2.set_yticklabels([center_red, center_blue])
         else:
             ax2.set_yticklabels(['', ''])
 
-def plot_row(gs, row, characteristics, size, train_size, split_seed, var=1.0, has_return=False, init_seed=1):
+# Plot a full row of three graphs
+def plot_row(row, characteristics, size, train_size, split_seed, var=1.0, has_return=False, init_seed=1):
     ax = fig.add_subplot(gs[row, 0])
     ax_GCN = fig.add_subplot(gs[row, 1])
     ax_MCGL = fig.add_subplot(gs[row, 2])
 
-    # get data
+    # get MS
     adj, features, labels, train_idx, test_idx, _min, _max = create_and_split(train_size, split_seed, init_seed, characteristics, var=var)
 
     # Original plot
@@ -218,7 +219,7 @@ def plot_row(gs, row, characteristics, size, train_size, split_seed, var=1.0, ha
     train_idx_MCGL = np.array(list(set(train_idx) | set(train_idx_adj)))
 
     ax_MCGL.text(_max*pos_x, _min*pos_y, 'c'+str(row+1), fontsize=textsize, fontname='Times New Roman')
-    plot_points_and_lines(ax_MCGL, features, adj, train_idx, size, _min, _max)
+    plot_points_and_lines(ax_MCGL, features, adj, train_idx_MCGL, size, _min, _max)
     plot_boundary_and_set_ticklabels(ax_MCGL, characteristics, _min, _max, is_last_column=True)
 
     if has_return:
@@ -258,9 +259,9 @@ if __name__ == '__main__':
     # Create subplots and plot three rows
     fig = plt.figure(figsize=figsize)
     gs = fig.add_gridspec(3, 3)
-    plot_row(gs, 0, 'non-linear', size=40, train_size=0.15, split_seed=3, init_seed=2)
-    plot_row(gs, 1, 'community', var=1, size=35, train_size=0.2, split_seed=4, init_seed=1)
-    ax, ax_GCN, ax_MCGL = plot_row(gs, 2, 'large_variance', var=1.85, size=35, train_size=0.15, split_seed=1, init_seed=1, has_return=True)
+    plot_row(0, 'non-linear', size=40, train_size=0.15, split_seed=3, init_seed=2)
+    plot_row(1, 'community', var=1, size=35, train_size=0.2, split_seed=4, init_seed=1)
+    ax, ax_GCN, ax_MCGL = plot_row(2, 'large_variance', var=1.85, size=35, train_size=0.15, split_seed=1, init_seed=1, has_return=True)
     ax.set_title('(a) Original graph', y=y, fontsize=titlesize, fontname='Times New Roman')
     ax_GCN.set_title('(b) After one-layer GCO', y=y, fontsize=titlesize, fontname='Times New Roman')
     ax_MCGL.set_title('(c) After one-hop MCGL', y=y, fontsize=titlesize, fontname='Times New Roman')

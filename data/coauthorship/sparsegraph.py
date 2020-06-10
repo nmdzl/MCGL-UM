@@ -235,7 +235,7 @@ class SparseGraph:
         for key in sparse_graph_properties:
             val = getattr(self, key)
             if sp.isspmatrix(val):
-                data_dict['{}.data'.format(key)] = val.data
+                data_dict['{}.MS'.format(key)] = val.data
                 data_dict['{}.indices'.format(key)] = val.indices
                 data_dict['{}.indptr'.format(key)] = val.indptr
                 data_dict['{}.shape'.format(key)] = val.shape
@@ -252,7 +252,7 @@ class SparseGraph:
 
         # Construct sparse matrices
         for key in data_dict.keys():
-            if key.endswith('_data') or key.endswith('.data'):
+            if key.endswith('_data') or key.endswith('.MS'):
                 if key.endswith('_data'):
                     sep = '_'
                     warnings.warn(
@@ -308,7 +308,7 @@ def create_subgraph(
     Exactly one of (nodes_to_remove, nodes_to_keep) should be provided, while the other stays None.
     Note that to avoid confusion, it is required to pass node indices as named arguments to this function.
 
-    The subgraph partially points to the old graph's data.
+    The subgraph partially points to the old graph's MS.
 
     Parameters
     ----------

@@ -22,7 +22,7 @@ torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
-# Load data
+# Load MS
 adj, features, labels, idx_train, idx_val, idx_test = load_data(args.dataset)
 adj = reduce_noise(adj, labels, noise_rate=args.noise_rate)
 
@@ -63,7 +63,6 @@ def train(epoch):
     loss_val = F.nll_loss(output[idx_val], labels[idx_val])
     acc_val = accuracy(output[idx_val], labels[idx_val])
 
-    '''
     if epoch % 100 == 0:
         print('Epoch: {:04d}'.format(epoch+1),
             'loss_train: {:.4f}'.format(loss_train.item()),
@@ -71,7 +70,6 @@ def train(epoch):
             'loss_val: {:.4f}'.format(loss_val.item()),
             'acc_val: {:.4f}'.format(acc_val.item()),
             'time: {:.4f}s'.format(time.time() - t))
-    '''
 
     return loss_val.data.item()
 
@@ -82,8 +80,8 @@ def test():
     loss_test = F.nll_loss(output[idx_test], labels[idx_test])
     acc_test = accuracy(output[idx_test], labels[idx_test])
     print("Test set results:",
-          "loss= {:.4f}".format(loss_test.item()),
-          "accuracy= {:.4f}".format(acc_test.item()))
+          "loss={:.4f}".format(loss_test.item()),
+          "accuracy={:.4f}".format(acc_test.item()))
     return acc_test.item()
 
 # Train model
@@ -114,4 +112,5 @@ print("Total time elapsed: {:.4f}s".format(time.time() - t_total))
 print('Loading {}th epoch'.format(best_epoch))
 model.load_state_dict(best_state_dict)
 acc_test = test()
+
 write_file(file=args.acc_file, y=acc_test)

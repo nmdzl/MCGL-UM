@@ -48,15 +48,6 @@ class Conlayer(nn.Module):#D^(-1/2)AD^(-1/2)X
         output = output.div(degree_sqrt)
         return output
 
-class Isolayer(nn.Module):#AX
-    def __init__(self, dropout):
-        super(Isolayer, self).__init__()
-        self.dropout = dropout
-
-    def forward(self, input, adj):
-        input = F.dropout(input, self.dropout, training=self.training)
-        output = t.matmul(adj, input)
-        return output
 
 class Avelayer(nn.Module):#D^(-1)AX ~ graph aggragate networks
     def __init__(self, dropout):
