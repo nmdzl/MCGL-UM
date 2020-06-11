@@ -69,7 +69,7 @@ def train(epoch):
             'acc_train: {:.4f}'.format(acc_train.item()),
             'loss_val: {:.4f}'.format(loss_val.item()),
             'acc_val: {:.4f}'.format(acc_val.item()),
-            'time: {:.4f}s'.format(time.time() - t))
+            'time_epoch: {:.4f}s'.format(time.time() - t))
 
     return loss_val.data.item()
 
@@ -113,4 +113,3 @@ print('Loading {}th epoch'.format(best_epoch))
 model.load_state_dict(best_state_dict)
 acc_test = test()
 
-write_file(file=args.acc_file, y=acc_test)
