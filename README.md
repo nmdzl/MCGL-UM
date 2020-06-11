@@ -2,100 +2,80 @@
 
 This repository is the official implementation of [Data Augmentation View on Graph Convolutional Network and the Proposal of Monte Carlo Graph Learning](url_arxiv).
 
+## Overview
+
+In this project, we provide implementations of visual analysis and three models -- GCN, GCN* and MCGL-UM. The repository is organised as follows:
+
+- `data/` contains the necessary dataset files for CORA, PubMed, CiteSeer and MS Academic.
+- `plot/` contains the visual analysis on synthetic clean and noisy graphs.
+- `train_MC_base.py` is the implementations of MCGL-UM.
+- `train_GCN.py` is the implementations of GCN and GCN*.
+- `layers.py` contains the definition of one-layer linear transformation, one-layer GCO.
+- `models.py` contains the GCN and MLP.
+- `ps.py` contains the command-line arguments definition with default values. By specifying arguments in this file, you can change the dataset and adjust hyper-parameters.
+- `utils.py` contains preprocessing utilities of data loading, data split, and noise reducing, 
+
+
 ## Requirements
 
-The project runs under Python 3.8.3 with several required packages.
-To install requirements, run:
+The project runs under Python 3.8.3 with several required dependencies:
 
-```setup
-pip install -r requirements.txt
-```
+* numpy==1.18.4
+* scipy==1.4.1
+* matplotlib==3.2.1
+* networkx==2.4
+* torchvision==0.6.0
+* torch==1.5.0
 
-(Recommended) It is highly recommended to train the models on GPU. If your computing device is GPU supported (e.g., NVIDIA GPU), please install CUDA first. Please follow [the official website of NVIDIA](https://developer.nvidia.com/cuda-downloads).
+In addition, CUDA 10.2 is used in this project.
 
-(Recommended) It is highly recommended to have Anaconda (4.8.3 for this project) installed on your operating system for PyTorch installation. To install Anaconda 4.8.3, please follow the instructions on [its official website](https://docs.conda.io/projects/conda/en/latest/user-guide/install/).
+## Visual analysis
 
-(Required) To install PyTorch, please follow the instructions on [its official website](https://pytorch.org/get-started/locally/). Select the best fit options and run the command to install PyTorch locally.
+This paper has some visual analysis. Run commands below to get these figures. 
 
-For example, if you select Stable (1.5) version, Windows operating system, Conda packages, Python language, CUDA version 10.2, run the following command to install:
-
-```install PyTorch
-conda install pytorch torchvision cudatoolkit=10.2 -c pytorch
+```visual
+cd plot
+python comparison_clean.py
+python comparison_noisy.py
+python deep_GCO.py
 ```
 
 ## Models
 
-In the paper, we trained three different models -- GCN, GCN* and MCGL-UM. To train GCN and GCN*, please run train_GCN.py and specify the baseline argument as 1 an 2 respectively. To train MCGL-UM, please run train_MC_base.py.
+In the paper, we used three different models -- GCN, GCN* and MCGL-UM. To implement them, run respective commands below:
 
-You can check ps.py to see the default values of all arguments. You can run both scripts without specifying any arguments (using the default values). Note that, always make sure that you specify the correct baseline, dataset, acc_file (saves the training result) to avoid expected error and overwriting.
+```train models
+python train_GCN.py --baseline 1
 
-### Train models with specifying hyper-parameters
+python train_GCN.py --baseline 2
 
-To train the models with specific hyper-parameters (optional, the default are the best hyper-parameters of CORA dataset on MCGL-UM model), run these commands for example:
-
-Train GCN model:
-```train GCN
-python train_GCN.py --baseline 1 --dataset cora --acc_file sample_acc_GCN1_cora.csv --hidden 32 --weight_decay 0.0005 --lr 0.005 -dropout 0.7 --seed 0
+python train_MC_base.py
 ```
 
-Train GCN* model:
-```train GCN*
-python train_GCN.py --baseline 2 --dataset citeseer --acc_file sample_acc_GCN2_citeseer.csv --hidden 64 --weight_decay 0.001 --lr 0.05 -dropout 0.4 --seed 1
+By specifying arguments in 'ps.py', you can change the dataset and adjust hyper-parameters.
+The optimal hyper-parameters we have drawn are shown below: hidden units/weight decay/learning rate/dropout rate/(batch size for MCGL-UM)
+
+
+Dataset | GCN | GCN* | MCGL-UM
+:-: | :-: | :-: | :-:
+CORA | 32/0.0005/0.005/0.7 | 32/0.0005/0.01/0.7 | 32/0.001/0.005/0.5/50
+CiteSeer | 64/0.001/0.05/0.6 | 64/0.001/0.05/0.4 | 64/0.001/0.005/0.3/200
+PubMed | 32/0.0005/0.05/0.3 | 32/0.0005/0.005/0.5 | 32/0.001/0.005/0.5/50
+MS Academic | 128/0.0005/0.01/0.6 | 128/0.0005/0.005/0.7 | 128/0.0001/0.005/0.5/200
+
+By specifying arguments ("depth", "trdep", "tsdep", and "noise_rate"), you can implement different depth of GCN* and MCGL-UM, and different reduced noise rate of all three models, for example:
+
+```train depth and nr
+python train_GCN.py --baseline 2 --depth 10
+
+python train_MC_base.py --trdep 10 --tsdep 10
+
+python train_GCN.py --baseline 1 --noise_rate 0.1
 ```
 
-Train MCGL-UM model:
-```train MCGL-UM
-python train_MC_base.py --dataset pubmed --acc_file sample_acc_MCGLUM_pubmed.csv --hidden 128 --weight_decay 0.0001 --lr 0.05 --dropout 0.5 --batch_size 200 --seed 2
-```
+## Datasets
 
-### Train models without specifying hyper-parameters (recommanded)
-
-Once you have decided the best hyper-parameters, it is recommanded to fill them in the corresponding dictionary in train_best.py, and run train_best.py (supporting all three models) to avoid the repetitive input of hyper-parameters. You can train all models by these commands for example:
-
-Train GCN model:
-```train GCN without params
-python train_best.py --model GCN --dataset ms_academic --acc_file sample_acc_GCN1_ms_academic.csv --seed 3
-```
-
-Train GCN* model:
-```train GCN* without params
-python train_best.py --model GCN* --dataset cora --acc_file sample_acc_GCN2_cora.csv --seed 4
-```
-
-Train MCGL-UM model:
-```train MCGL-UM without params
-python train_best.py --model MCGL-UM --dataset citeseer --acc_file sample_acc_MCGLUM_citeseer.csv --seed 5
-```
-
-### Train with different depth
-
-Also, you can train GCN* and MCGL-UM models with different depth. For GCN*, please specify the depth argument; for MCGL-UM, please specify both trdep nad tsdep arguments for the depth of training and inference respectively. Run these commands for example:
-
-Train GCN* model with depth of 10:
-```train GCN* depth=10
-python train_best.py --model GCN* --dataset pubmed --acc_file sample_acc_GCN2_pubmed_depth=10.csv --depth 10 --seed 6
-```
-
-Train MCGL-UM model with trdep of 10 and tsdep of 10:
-```train MCGL-UM trdep=10 tsdep=10
-python train_best.py --model MCGL-UM --dataset ms_academic --acc_file sample_acc_MCGLUM_ms_academic_trdep=10_tsdep=10.csv --trdep 10 --tsdep 10 --seed 7
-```
-
-### Train with different reduced noise rate
-
-Moreover, you can train all three models with different reduced noise rate (see paper for clear definition), by specifying the noise_rate argument. Note that, if the passed argument is equal or larger than the noise rate in original dataset, there is no change to the original graph structure. The default value of noise_rate argument is 1.0, which maintains the original graph structure. Run these commands for example:
-
-Train GCN model with nosie rate reduced to 10%:
-```train GCN nr=0.1
-python train_best.py --model GCN --dataset cora --acc_file sample_acc_GCN1_cora_nr=0.1.csv --noise_rate 0.1 --seed 8
-```
-
-Train GCN* model with nosie rate reduced to 10%:
-```train GCN* nr=0.1
-python train_best.py --model GCN* --dataset citeseer --acc_file sample_acc_GCN2_citeseer_nr=0.1.csv --noise_rate 0.1 --seed 9
-```
-
-Train MCGL-UM model with nosie rate reduced to 10%:
-```train MCGL-UM nr=0.1
-python train_best.py --model MCGL-UM --dataset pubmed --acc_file sample_acc_MCGLUM_pubmed_nr=0.1.csv --noise_rate 0.1 --seed 10
-```
+In this paper, we use three citation datasets and a co-authorship dataset, 
+which can be downloaded in https://github.com/tkipf/gcn/tree/master/gcn/data and https://github.com/klicperajo/ppnp/tree/master/ppnp/data. 
+CORA, CiteSeer and PubMed are citation graphs, where a node represents a paper, and an edge between two nodes represents that the two papers have a citation relationship.
+MS Academic is co-author graph, an edge in the graph represents the co-authorship between two papers.

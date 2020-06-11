@@ -7,7 +7,7 @@ def parse_args():
                         help='Choose GCN baseline. 1 refers to GCN. 2 refers to GCN*.')
     parser.add_argument('--batch_size', type=int, default=100,
                         help='Set the batch size of MCGL')
-    parser.add_argument('--dataset', type=str, default='pubmed',
+    parser.add_argument('--dataset', type=str, default='citeseer',
                         help='Choose from {cora, citeseer, pubmed, ms_academic}')
     parser.add_argument('--depth', type=int, default=2,
                         help='the depth of GCN model')
@@ -35,6 +35,4 @@ def parse_args():
                         help='Set the depth of inference tree when testing')
     parser.add_argument('--weight_decay', type=float, default=0.0005,
                         help='Set weight decay (L2 loss on parameters).')
-    parser.add_argument('--acc_file', type=str, default='acc/sample.csv',
-                        help='the file to save the accuracy')
     return parser.parse_args()

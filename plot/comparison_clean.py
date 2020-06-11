@@ -1,6 +1,6 @@
 """
 Note that different compilers will output different plots.
-The sample comparison_clean.pdf is the result of Python IDLE 3.8 64-bit.
+The sample comparison_clean.pdf is the result of Python IDLE 3.8.3.
 """
 
 import matplotlib.pyplot as plt
@@ -50,7 +50,7 @@ def create_and_split(train_size, split_seed, init_seed, characteristics, var=1.0
                 adj[(idx if idx < i else i) + num][(i if idx < i else idx + 1) + num] = 1
         adj = adj + np.transpose(adj) + np.eye(2*num)
 
-        # split MS
+        # split data
         np.random.seed(split_seed)
         train_idx_red = np.random.choice(range(num), size=int(num * train_size), replace=False)
         train_idx_blue = np.random.choice(range(num, 2*num), size=int(num * train_size), replace=False)
@@ -90,7 +90,7 @@ def create_and_split(train_size, split_seed, init_seed, characteristics, var=1.0
                         adj[idx_i + num][idx_j + num] = 1
         adj = adj + np.transpose(adj) + np.eye(2*num)
 
-        # split MS
+        # split data
         np.random.seed(split_seed)
         train_idx_red = np.concatenate(
             [np.random.choice(communities_red[0], int(num * train_size * 0.8), replace=False),
@@ -121,7 +121,7 @@ def create_and_split(train_size, split_seed, init_seed, characteristics, var=1.0
                 adj[(idx if idx < i else i) + num][(i if idx < i else idx + 1) + num] = 1
         adj = adj + np.transpose(adj) + np.eye(2*num)
 
-        # split MS
+        # split data
         np.random.seed(split_seed)
         train_idx_red = np.random.choice(range(num), size=int(num * train_size), replace=False)
         train_idx_blue = np.random.choice(range(num, 2*num), size=int(num * train_size), replace=False)
@@ -191,7 +191,7 @@ def plot_row(row, characteristics, size, train_size, split_seed, var=1.0, has_re
     ax_GCN = fig.add_subplot(gs[row, 1])
     ax_MCGL = fig.add_subplot(gs[row, 2])
 
-    # get MS
+    # get data
     adj, features, labels, train_idx, test_idx, _min, _max = create_and_split(train_size, split_seed, init_seed, characteristics, var=var)
 
     # Original plot
