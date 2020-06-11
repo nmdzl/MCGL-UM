@@ -4,10 +4,22 @@ This repository is the official implementation of [Data Augmentation View on Gra
 
 ## Requirements
 
-To install requirements:
+The project runs under Python 3.8.3 with several required packages.
+To install requirements, run:
 
 ```setup
-pip intall -r requirements.txt
+pip install -r requirements.txt
+```
+
+(Optional) It is highly recommended to train the models on GPU. If your computing device is GPU supported (e.g., NVIDIA GPU), please install CUDA first. Please follow [the official website of NVIDIA](https://developer.nvidia.com/cuda-downloads).
+
+(Optional) It is highly recommended to have Anaconda (4.8.3 for this project) installed on your operating system for PyTorch installation. To install Anaconda 4.8.3, please follow the instructions on [its official website](https://docs.conda.io/projects/conda/en/latest/user-guide/install/).
+
+(Required) To install PyTorch, please follow the instructions on [its official website](https://pytorch.org/get-started/locally/). Select the best fit options and run the command to install PyTorch locally.
+
+For example, if you select Stable (1.5) version, Windows operating system, Conda packages, Python language, CUDA version 10.2, run the following command to install:
+```install PyTorch
+conda install pytorch torchvision cudatoolkit=10.2 -c pytorch
 ```
 
 ## Training
